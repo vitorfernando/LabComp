@@ -313,7 +313,7 @@ public class Compiler {
 	private StatementList statementList() {
 		// CompStatement ::= "{" { Statement } "}"
 		Symbol tk;
-		ArrayList<Statement> stmtList = new ArrayList<>;
+		ArrayList<Statement> stmtList = new ArrayList<>();
 		// statements always begin with an identifier, if, read, write, ...
 		while ((tk = lexer.token) != Symbol.RIGHTCURBRACKET
 				&& tk != Symbol.ELSE)
@@ -406,7 +406,8 @@ public class Compiler {
 	 * AssignExprLocalDec ::= Expression [ ``$=$'' Expression ] | LocalDec
 	 */
 	private Expr assignExprLocalDec() {
-
+		
+		Expr left=null, right=null;
 		if ( lexer.token == Symbol.INT || lexer.token == Symbol.BOOLEAN
 				|| lexer.token == Symbol.STRING ||
 				// token é uma classe declarada textualmente antes desta
@@ -424,10 +425,13 @@ public class Compiler {
 			/*
 			 * AssignExprLocalDec ::= Expression [ ``$=$'' Expression ]
 			 */
-			expr();
+			left = expr();
 			if ( lexer.token == Symbol.ASSIGN ) {
 				lexer.nextToken();
-				expr();
+				right = expr();
+				if(left.getType() != right.getType())
+					signalError.showError("Expressions of diferents types");
+				
 				if ( lexer.token != Symbol.SEMICOLON )
 					signalError.showError("';' expected", true);
 				else
@@ -445,48 +449,55 @@ public class Compiler {
 		if ( startExpr(lexer.token) ) anExprList = exprList();
 		if ( lexer.token != Symbol.RIGHTPAR ) signalError.showError(") expected");
 		lexer.nextToken();
-		return anExprList;
+		return anExprList;	
 	}
 
 	private WhileStatement whileStatement() {
 
+		WhileStatement whileStmt = null;
 		lexer.nextToken();
+		
 		if ( lexer.token != Symbol.LEFTPAR ) signalError.showError("( expected");
 		lexer.nextToken();
-		expr();
+		whileStmt.expr = expr();
 		if ( lexer.token != Symbol.RIGHTPAR ) signalError.showError(") expected");
 		lexer.nextToken();
-		statement();
-		return null;
+		whileStmt.stmt = statement();
+		return whileStmt;
 	}
 
 	private IfStatement ifStatement() {
 
+		IfStatement ifStmt = null;
 		lexer.nextToken();
 		if ( lexer.token != Symbol.LEFTPAR ) signalError.showError("( expected");
 		lexer.nextToken();
-		expr();
+		ifStmt.expr = expr();
+		if(ifStmt.expr.getType() != Type.booleanType)
+			signalError.showError("Expression of comparision must be boolean");
 		if ( lexer.token != Symbol.RIGHTPAR ) signalError.showError(") expected");
 		lexer.nextToken();
-		statement();
+		ifStmt.stmt = statement();
 		if ( lexer.token == Symbol.ELSE ) {
 			lexer.nextToken();
 			statement();
 		}
-		return null;
+		return ifStmt;
 	}
 
 	private ReturnStatement returnStatement() {
 
+		ReturnStatement retStmt = null;
 		lexer.nextToken();
-		expr();
+		retStmt.expr = expr();
 		if ( lexer.token != Symbol.SEMICOLON )
 			signalError.show(ErrorSignaller.semicolon_expected);
 		lexer.nextToken();
-		return null;
+		return retStmt;
 	}
 
 	private ReadStatement readStatement() {
+		ReadStatement readStmt = null;
 		lexer.nextToken();
 		if ( lexer.token != Symbol.LEFTPAR ) signalError.showError("( expected");
 		lexer.nextToken();
