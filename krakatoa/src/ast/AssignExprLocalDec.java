@@ -1,10 +1,10 @@
 package ast;
 
-public class IfStatement extends Statement {
+public class AssignExprLocalDec extends Statement{
 
-	public Expr expr;
-	public Statement stmt;
-	public Statement elseStmt;
+	public LocalDec localDec;
+	public Expr left;
+	public Expr right;
 
 	@Override
 	public void genC(PW pw) {

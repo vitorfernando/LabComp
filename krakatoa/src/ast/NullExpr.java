@@ -10,4 +10,10 @@ public class NullExpr extends Expr {
       //# corrija
       return null;
    }
+
+@Override
+public void genKra(PW pw) {
+	// TODO Auto-generated method stub
+	
+}
 }

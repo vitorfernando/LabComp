@@ -1,10 +1,8 @@
 package ast;
 
-public class IfStatement extends Statement {
+public class WriteLnStatement extends Statement {
 
-	public Expr expr;
-	public Statement stmt;
-	public Statement elseStmt;
+	public ExprList exprlist;
 
 	@Override
 	public void genC(PW pw) {

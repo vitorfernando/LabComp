@@ -1,9 +1,21 @@
 package ast;
 
-public class ParamDec {
+public class ParamDec extends Variable{
 
-	public ParamDec(Type type, String name) {
-		// TODO Auto-generated constructor stub
+	private String name;
+	private Type type;
+	public String getName() {
+		return name;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public ParamDec(String stringValue, Type type) {
+		super(stringValue, type);
+		this.name = stringValue;
+		this.type = type;
 	}
 
 }

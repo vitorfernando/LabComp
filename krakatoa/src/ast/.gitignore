@@ -48,3 +48,5 @@
 /WhileStatement.class
 /WriteInStatement.class
 /WriteStatement.class
+/AssignExprLocalDec.class
+/WriteLnStatement.class

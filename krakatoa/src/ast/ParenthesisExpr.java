@@ -17,4 +17,10 @@ public class ParenthesisExpr extends Expr {
     }
     
     private Expr expr;
+
+	@Override
+	public void genKra(PW pw) {
+		// TODO Auto-generated method stub
+		
+	}
 }

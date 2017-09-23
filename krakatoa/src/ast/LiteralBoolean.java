@@ -20,4 +20,10 @@ public class LiteralBoolean extends Expr {
     public static LiteralBoolean False = new LiteralBoolean(false);
 
     private boolean value;
+
+	@Override
+	public void genKra(PW pw) {
+		// TODO Auto-generated method stub
+		
+	}
 }

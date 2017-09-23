@@ -26,4 +26,9 @@ public class SignalExpr extends Expr {
 
     private Expr expr;
     private Symbol oper;
+	@Override
+	public void genKra(PW pw) {
+		// TODO Auto-generated method stub
+		
+	}
 }

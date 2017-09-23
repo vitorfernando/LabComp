@@ -18,4 +18,10 @@ public class LiteralInt extends Expr {
     }
     
     private int value;
+
+	@Override
+	public void genKra(PW pw) {
+		// TODO Auto-generated method stub
+		
+	}
 }

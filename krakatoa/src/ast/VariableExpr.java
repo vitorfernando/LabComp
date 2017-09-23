@@ -15,4 +15,10 @@ public class VariableExpr extends Expr {
     }
     
     private Variable v;
+
+	@Override
+	public void genKra(PW pw) {
+		// TODO Auto-generated method stub
+		
+	}
 }
