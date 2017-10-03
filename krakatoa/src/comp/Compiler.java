@@ -210,9 +210,6 @@ public class Compiler {
 		 */
 		this.currentMethod = new MethodDec(type, name, qualifier);
 		lexer.nextToken();
-		if (lexer.token != Symbol.LEFTPAR)
-			signalError.showError("( expected");
-		lexer.nextToken();
 		if (lexer.token != Symbol.RIGHTPAR)
 			this.currentMethod.param = formalParamDec();
 		if (lexer.token != Symbol.RIGHTPAR)
