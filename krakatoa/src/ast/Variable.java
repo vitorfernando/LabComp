@@ -13,6 +13,7 @@ public class Variable {
         return type;
     }
 
+    
     private String name;
     private Type type;
 }

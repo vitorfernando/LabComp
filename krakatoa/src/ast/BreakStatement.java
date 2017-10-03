@@ -10,8 +10,7 @@ public class BreakStatement extends Statement {
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		pw.println("break ;");		
 	}
 
 }

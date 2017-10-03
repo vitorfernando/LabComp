@@ -14,7 +14,14 @@ public class AssignExprLocalDec extends Statement{
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
+		if(this.localDec!=null)
+			this.localDec.genkra(pw);
+		else
+		{
+			this.left.genKra(pw);
+			pw.print("=");
+			this.right.genKra(pw);
+		}
 		
 	}
 

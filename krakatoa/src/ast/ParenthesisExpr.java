@@ -20,7 +20,9 @@ public class ParenthesisExpr extends Expr {
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
+		pw.print("(");
+		this.expr.genKra(pw);
+		pw.printIdent(")");
 		
 	}
 }

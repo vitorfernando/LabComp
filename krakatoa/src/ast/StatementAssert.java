@@ -35,7 +35,8 @@ public class StatementAssert extends Statement {
 	private String message;
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		pw.printIdent("assert");
+		this.expr.genKra(pw);
+		pw.print(", " + this.message);
 	}
 }

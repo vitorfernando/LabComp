@@ -4,8 +4,20 @@ import java.util.ArrayList;
 
 public class FormalParamDec {
 
-	public FormalParamDec(ArrayList<ParamDec> params) {
-		// TODO Auto-generated constructor stub
-	}
+	private ArrayList<ParamDec> params;
 
+	public FormalParamDec(ArrayList<ParamDec> params) {
+		this.params = params;
+	}
+	
+	public void genKra(PW pw) 
+	{
+		int size = params.size();
+		for (ParamDec p: params)
+		{
+			pw.print(p.getType().getName() + " " + p.getName());
+			if(--size>0)
+				pw.print(", ");
+		}
+	}
 }

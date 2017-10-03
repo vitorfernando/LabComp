@@ -61,7 +61,9 @@ public class CompositeExpr extends Expr {
     }
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
+		this.left.genKra(pw);
+		pw.print(" "+arrayOper.get(oper)+" ");
+		this.right.genKra(pw);
 		
 	}
 }

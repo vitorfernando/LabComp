@@ -28,7 +28,10 @@ public class SignalExpr extends Expr {
     private Symbol oper;
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		if(this.oper == Symbol.PLUS)
+			pw.print("+");
+		else
+			pw.print("-");
+		this.expr.genKra(pw);
 	}
 }

@@ -14,8 +14,19 @@ public class IfStatement extends Statement {
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		pw.printIdent("if ( ");
+		this.expr.genKra(pw);
+		pw.printlnIdent(")");
+		pw.add();
+		this.stmt.genKra(pw);
+		pw.sub();
+		if(this.elseStmt!=null)
+		{
+			pw.printlnIdent(" else ");
+			pw.add();
+			this.elseStmt.genKra(pw);
+			pw.sub();
+		}		
 	}
 
 }

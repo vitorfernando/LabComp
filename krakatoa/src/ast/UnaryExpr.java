@@ -38,7 +38,19 @@ public class UnaryExpr extends Expr {
 	private Symbol	op;
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		switch (op) {
+		case PLUS:
+			pw.print("+");
+			break;
+		case MINUS:
+			pw.print("-");
+			break;
+		case NOT:
+			pw.print("!");
+			break;
+		default:
+			pw.print(" internal error at UnaryExpr::genKra");
+		}
+		this.expr.genKra(pw);
 	}
 }

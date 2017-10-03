@@ -2,6 +2,8 @@ package ast;
 
 public class CompositeStatement extends Statement {
 
+	public StatementList stmlist;
+
 	@Override
 	public void genC(PW pw) {
 		// TODO Auto-generated method stub
@@ -10,8 +12,11 @@ public class CompositeStatement extends Statement {
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		pw.printlnIdent("{");
+		pw.add();
+		this.stmlist.genKra(pw);
+		pw.sub();
+		pw.println("}");
 	}
 
 }

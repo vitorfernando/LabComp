@@ -2,6 +2,8 @@ package ast;
 
 public class WriteStatement extends Statement{
 
+	public ExprList exprlist;
+
 	@Override
 	public void genC(PW pw) {
 		// TODO Auto-generated method stub
@@ -10,8 +12,9 @@ public class WriteStatement extends Statement{
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		pw.print("write(");
+		this.exprlist.genKra(pw);
+		pw.print(");");
 	}
-
 }
+

@@ -13,8 +13,15 @@ public class ReadStatement extends Statement{
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
-		
+		int size = name.size();
+		pw.print("read(");
+		for(String n: name)
+		{
+			pw.print(n);
+			if(--size>0)
+				pw.print(", ");
+		}
+		pw.println(");");
 	}
 
 }

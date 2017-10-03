@@ -12,7 +12,9 @@ public class WriteLnStatement extends Statement {
 
 	@Override
 	public void genKra(PW pw) {
-		// TODO Auto-generated method stub
+		pw.print("write(");
+		this.exprlist.genKra(pw);
+		pw.println(");");
 		
 	}
 

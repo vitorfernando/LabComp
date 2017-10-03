@@ -226,6 +226,20 @@ public class Compiler {
 		this.currentMethod.stmtList = statementList();
 		if (lexer.token != Symbol.RIGHTCURBRACKET)
 			signalError.showError("} expected");
+		if(this.currentMethod.getReturnType().getName().compareToIgnoreCase("void")!=0)
+		{
+			boolean retflag = false;
+			for(Statement m: this.currentMethod.stmtList.getStmtlist())
+			{
+				if(m.getClass()==ReturnStatement.class)
+				{
+					retflag = true;
+					break;
+				}
+			}		
+			if(!retflag)
+				signalError.showError("a non void method must have a return statement");
+		}
 
 		lexer.nextToken();
 		this.currentClass.addMethod(this.currentMethod);
@@ -252,7 +266,7 @@ public class Compiler {
 			arrayVar.add(v);
 			lexer.nextToken();
 		}
-		return new LocalDec(arrayVar);
+		return new LocalDec(arrayVar, type);
 	}
 
 	private FormalParamDec formalParamDec() {
@@ -314,7 +328,8 @@ public class Compiler {
 	private CompositeStatement compositeStatement() {
 
 		lexer.nextToken();
-		statementList();
+		CompositeStatement comp = new CompositeStatement();
+			comp.stmlist = statementList();
 		if (lexer.token != Symbol.RIGHTCURBRACKET)
 			signalError.showError("} expected");
 		else
@@ -364,10 +379,9 @@ public class Compiler {
 		case WHILE:
 			return whileStatement();
 		case SEMICOLON:
-			nullStatement();
+			return nullStatement();
 		case LEFTCURBRACKET:
-			compositeStatement();
-			break;
+			return compositeStatement();
 		default:
 			signalError.showError("Statement expected");
 		}
@@ -549,19 +563,20 @@ public class Compiler {
 	}
 
 	private WriteStatement writeStatement() {
-
+		
+		WriteStatement write = new WriteStatement();
 		lexer.nextToken();
 		if (lexer.token != Symbol.LEFTPAR)
 			signalError.showError("( expected");
 		lexer.nextToken();
-		exprList();
+		write.exprlist = exprList();
 		if (lexer.token != Symbol.RIGHTPAR)
 			signalError.showError(") expected");
 		lexer.nextToken();
 		if (lexer.token != Symbol.SEMICOLON)
 			signalError.show(ErrorSignaller.semicolon_expected);
 		lexer.nextToken();
-		return null;
+		return write;
 	}
 
 	private WriteLnStatement writelnStatement() {
@@ -590,9 +605,10 @@ public class Compiler {
 		return breakstmt;
 	}
 
-	private void nullStatement() {
+	private Statement nullStatement() {
 
 		lexer.nextToken();
+		return new NullStatement();
 	}
 
 	private ExprList exprList() {
