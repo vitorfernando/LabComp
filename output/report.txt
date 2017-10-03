@@ -1,29 +1,9 @@
 Relatório do Compilador
 
-9 de um total de 144 erros que deveriam ser sinalizados não o foram (6%)
-109 erros foram sinalizados na linha errada (75%)
-54 erros foram sinalizados em 74 arquivos sem erro (72%)
-
-Erros que deveriam ser sinalizados mas não foram:
-
-ER-SEM28.KRA, 10, Variable 'i' is being redeclared (comp.Compiler.localDec())
-
-ER-SEM31.KRA, 10, Method 'i' has name equal to an instance variable (comp.Compiler.methodDec())
-
-ER-SEM40.KRA, 40, Type error: the type of the real parameter is not subclass of the type of the formal parameter (comp.Compiler.factor())
-
-ER-SEM44.KRA, 26, Command 'write' does not accept objects (comp.Compiler.writeStatement())
-
-ER-SEM47.KRA, 24, Method 'm' was not found in superclass 'B' or its superclasses (comp.Compiler.factor())
-
-ER-SEM51.KRA, 17, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
-
-ER-SEM62.KRA, 15, Identifier 'a' was not found (comp.Compiler.factor())
-
-ER-SEM71.KRA, 9, Attempt to access an instance variable using 'this' in a static method (comp.Compiler.factor())
-
-ER-SIN31.KRA, 6, 'public', 'private', or '}' expected (comp.Compiler.classDec())
-
+0 de um total de 144 erros que deveriam ser sinalizados não o foram (0%)
+117 erros foram sinalizados na linha errada (81%)
+71 erros foram sinalizados em 74 arquivos sem erro (95%)
+Todos os erros que deveriam ter sido sinalizados o foram
 ######################################################
 Erros que foram sinalizados na linha errada:
 
@@ -159,9 +139,17 @@ ER-SEM27.KRA
     correto:    6, Class 'A' is inheriting from itself (comp.Compiler.classDec())
     sinalizado: 12, ( expected
 
+ER-SEM28.KRA
+    correto:    10, Variable 'i' is being redeclared (comp.Compiler.localDec())
+    sinalizado: 8, Identifier expected
+
 ER-SEM30.KRA
     correto:    16, Method 'put' of subclass 'B' has a signature different from method inherited from superclass 'A' (comp.Compiler.methodDec())
     sinalizado: 8, ( expected
+
+ER-SEM31.KRA
+    correto:    10, Method 'i' has name equal to an instance variable (comp.Compiler.methodDec())
+    sinalizado: 8, Identifier expected
 
 ER-SEM32.KRA
     correto:    11, Method 'm' is being redeclared (comp.Compiler.methodDec())
@@ -195,6 +183,10 @@ ER-SEM39.KRA
     correto:    16, Type error: type of the expression returned is not subclass of the method return type (comp.Compiler.returnStatement())
     sinalizado: 15, Type expected
 
+ER-SEM40.KRA
+    correto:    40, Type error: the type of the real parameter is not subclass of the type of the formal parameter (comp.Compiler.factor())
+    sinalizado: 8, Identifier expected
+
 ER-SEM41.KRA
     correto:    14, Type error: the type of the expression of the right-hand side is a basic type and the type of the variable of the left-hand side is a class (comp.Compiler.assignExprLocalDec())
     sinalizado: 11, ( expected
@@ -207,6 +199,10 @@ ER-SEM43.KRA
     correto:    10, Type error: 'null' cannot be assigned to a variable of a basic type (comp.Compiler.assignExprLocalDec())
     sinalizado: 7, ( expected
 
+ER-SEM44.KRA
+    correto:    26, Command 'write' does not accept objects (comp.Compiler.writeStatement())
+    sinalizado: 7, Identifier expected
+
 ER-SEM45.KRA
     correto:    13, 'int' or 'String' expression expected (comp.Compiler.readStatement())
     sinalizado: 10, ( expected
@@ -215,9 +211,17 @@ ER-SEM46.KRA
     correto:    9, 'super' used in class 'Program' that does not have a superclass (comp.Compiler.factor())
     sinalizado: 8, ( expected
 
+ER-SEM47.KRA
+    correto:    24, Method 'm' was not found in superclass 'B' or its superclasses (comp.Compiler.factor())
+    sinalizado: 7, Identifier expected
+
 ER-SEM50.KRA
     correto:    17, Command 'break' outside a command 'while' (comp.Compiler.breakStatement())
     sinalizado: 7, ( expected
+
+ER-SEM51.KRA
+    correto:    17, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
+    sinalizado: 7, Identifier expected
 
 ER-SEM57.KRA
     correto:    21, Incompatible types cannot be compared with '==' because the result will always be 'false' (comp.Compiler.expr())
@@ -238,6 +242,10 @@ ER-SEM60.KRA
 ER-SEM61.KRA
     correto:    33, Method 's' was not found in class 'C' or its superclasses (comp.Compiler.factor())
     sinalizado: 9, ( expected
+
+ER-SEM62.KRA
+    correto:    15, Identifier 'a' was not found (comp.Compiler.factor())
+    sinalizado: 9, Identifier expected
 
 ER-SEM63.KRA
     correto:    12, '.' or '=' expected after an identifier OR statement expected (comp.Compiler.factor())
@@ -270,6 +278,10 @@ ER-SEM69.KRA
 ER-SEM70.KRA
     correto:    10, Method 'm' is being redefined (comp.Compiler.methodDec())
     sinalizado: 7, ( expected
+
+ER-SEM71.KRA
+    correto:    9, Attempt to access an instance variable using 'this' in a static method (comp.Compiler.factor())
+    sinalizado: 6, Identifier expected
 
 ER-SEM72.KRA
     correto:    11, Call to 'this' in a static method (comp.Compiler.factor())
@@ -468,9 +480,17 @@ Erros que foram sinalizados mas não deveriam ter sido:
 
 OK-CHK01.KRA, 24, ( expected
 
+OK-CHK02.KRA, 19, Identifier expected
+
+OK-CHK03.KRA, 12, Identifier expected
+
+OK-CHK04.KRA, 12, Identifier expected
+
 OK-CHK05.KRA, 12, ( expected
 
 OK-CHK06.KRA, 12, ( expected
+
+OK-CHK07.KRA, 14, Identifier expected
 
 OK-GER01.KRA, 40, ( expected
 
@@ -490,9 +510,19 @@ OK-GER08.KRA, 15, ( expected
 
 OK-GER09.KRA, 14, ( expected
 
+OK-GER10.KRA, 15, Identifier expected
+
 OK-GER11.KRA, 15, ( expected
 
 OK-GER12.KRA, 14, ( expected
+
+OK-GER13.KRA, 13, Identifier expected
+
+OK-GER14.KRA, 16, Identifier expected
+
+OK-GER15.KRA, 13, Identifier expected
+
+OK-GER16.KRA, 13, Identifier expected
 
 OK-GER17.KRA, 11, public/private or "}" expected
 
@@ -501,6 +531,8 @@ OK-GER18.KRA, 11, public/private or "}" expected
 OK-GER19.KRA, 11, public/private or "}" expected
 
 OK-GER20.KRA, 11, Type expected
+
+OK-GER21.KRA, 11, Identifier expected
 
 OK-GER22.KRA, 11, ( expected
 
@@ -528,7 +560,13 @@ OK-SEM03.KRA, 13, ( expected
 
 OK-SEM04.KRA, 13, ( expected
 
+OK-SEM05.KRA, 14, Identifier expected
+
+OK-SEM06.KRA, 12, Identifier expected
+
 OK-SEM07.KRA, 11, ( expected
+
+OK-SEM08.KRA, 12, Identifier expected
 
 OK-SEM09.KRA, 11, ( expected
 
@@ -562,13 +600,21 @@ OK-SIN05.KRA, 14, ( expected
 
 OK-SIN06.KRA, 12, ( expected
 
+OK-SIN07.KRA, 14, Identifier expected
+
 OK-SIN08.KRA, 11, ( expected
+
+OK-SIN09.KRA, 14, Identifier expected
+
+OK-SIN10.KRA, 11, Identifier expected
 
 OK-SIN11.KRA, 11, ( expected
 
 OK-SIN12.KRA, 11, ( expected
 
 OK-SIN13.KRA, 11, ( expected
+
+OK-SIN14.KRA, 14, Identifier expected
 
 OK-SIN15.KRA, 12, ( expected
 
@@ -622,6 +668,11 @@ The 'ce' message is:      "'class' expected"
 ER-SIN29.KRA
 The compiler message was: "public/private or "}" expected"
 The 'ce' message is:      "'private',  'public', or '}' expected"
+
+
+ER-SIN31.KRA
+The compiler message was: "Identifier expected"
+The 'ce' message is:      "'public', 'private', or '}' expected"
 
 
 ER-SIN32.KRA

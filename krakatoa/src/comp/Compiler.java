@@ -141,6 +141,7 @@ public class Compiler {
 			superclassName = lexer.getStringValue();
 			if (symbolTable.getInGlobal(superclassName) == null)
 				signalError.showError("superclass have not been declared");
+			this.currentClass.setSuperclass(new KraClass(superclassName));
 			lexer.nextToken();
 		}
 		if (lexer.token != Symbol.LEFTCURBRACKET)
@@ -179,7 +180,7 @@ public class Compiler {
 		if (lexer.token != Symbol.RIGHTCURBRACKET)
 			signalError.showError("public/private or \"}\" expected");
 		lexer.nextToken();
-		return new KraClass(className, superclassName, methodList, varList);
+		return this.currentClass;
 
 	}
 
@@ -187,8 +188,7 @@ public class Compiler {
 		// InstVarDec ::= [ "static" ] "private" Type IdList ";"
 
 		this.currentClass.addInstanceVariable(new InstanceVariable(name, type));
-		while (lexer.token == Symbol.COMMA) {
-			lexer.nextToken();
+		do {
 			if (lexer.token != Symbol.IDENT)
 				signalError.showError("Identifier expected");
 			InstanceVariable var = new InstanceVariable(lexer.getStringValue(), type);
@@ -197,7 +197,7 @@ public class Compiler {
 			symbolTable.putInLocal(var.getName(), var);
 			this.currentClass.addInstanceVariable(var);
 			lexer.nextToken();
-		}
+		}while (lexer.token == Symbol.COMMA);
 		if (lexer.token != Symbol.SEMICOLON)
 			signalError.show(ErrorSignaller.semicolon_expected);
 		lexer.nextToken();

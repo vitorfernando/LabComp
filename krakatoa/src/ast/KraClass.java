@@ -12,14 +12,13 @@ public class KraClass extends Type {
 	private ArrayList<InstanceVariable> instanceVariableList;
 	private ArrayList<MethodDec> publicMethodList, privateMethodList;
 	
-	public KraClass(String name) {
-		super(name);
-		this.publicMethodList = new ArrayList<>();
-	}
+	
 
-	public KraClass(String className, String superclassName, ArrayList<MethodDec> methodList,
-			ArrayList<InstanceVarDec> varList) {
-		super();
+	public KraClass(String className) {
+		super(className);
+		this.instanceVariableList = new ArrayList<>();
+		this.privateMethodList = new ArrayList<>();
+		this.publicMethodList = new ArrayList<>();
 	}
 
 	public String getCname() {
