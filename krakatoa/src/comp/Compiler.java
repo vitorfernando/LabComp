@@ -39,6 +39,17 @@ public class Compiler {
 			classDec();
 			while (lexer.token == Symbol.CLASS)
 				kraClassList.add(classDec());
+			boolean progFlag = false;
+			for(KraClass k: kraClassList)
+			{
+				if(k.getName().equals("Program"))
+				{
+					progFlag = true;
+					break;
+				}
+			}
+			if(!progFlag)
+				signalError.showError("Source code without a class 'Program'");
 			if (lexer.token != Symbol.EOF) {
 				signalError.showError("End of file expected");
 			}
@@ -141,6 +152,8 @@ public class Compiler {
 			superclassName = lexer.getStringValue();
 			if (symbolTable.getInGlobal(superclassName) == null)
 				signalError.showError("superclass have not been declared");
+			if(className.compareToIgnoreCase(superclassName)==0)
+					signalError.showError("class" + className + "is inheriting from itself");
 			this.currentClass.setSuperclass(new KraClass(superclassName));
 			lexer.nextToken();
 		}
@@ -170,8 +183,11 @@ public class Compiler {
 				signalError.showError("Identifier expected");
 			String name = lexer.getStringValue();
 			lexer.nextToken();
-			if (lexer.token == Symbol.LEFTPAR)
+			if (lexer.token == Symbol.LEFTPAR) {
+				if(className.equals("Program") && qualifier.toString().equals("private") && name.equals("run"))
+					signalError.showError("Method 'run' of class 'Program' cannot be private");
 				methodDec(t, name, qualifier);
+			}
 			else if (qualifier != Symbol.PRIVATE)
 				signalError.showError("Attempt to declare a public instance variable");
 			else
@@ -180,6 +196,20 @@ public class Compiler {
 		if (lexer.token != Symbol.RIGHTCURBRACKET)
 			signalError.showError("public/private or \"}\" expected");
 		lexer.nextToken();
+		if(this.currentClass.getName().equals("Program"))
+			{
+			boolean runFlag = false;
+			for (MethodDec m: this.currentClass.getPublicMethodList())
+			{
+				if(m.getName().equals("run"))
+				{
+					runFlag = true;
+					break;
+				}
+			}
+			if(!runFlag)
+				signalError.showError("ethod 'run' was not found in class 'Program'");
+			}
 		return this.currentClass;
 
 	}
@@ -209,12 +239,16 @@ public class Compiler {
 		 * "}"
 		 */
 		this.currentMethod = new MethodDec(type, name, qualifier);
+		if (symbolTable.getInLocal(this.currentMethod.getName()) != null)
+			signalError.showError("method has already been declared");
 		lexer.nextToken();
 		if (lexer.token != Symbol.RIGHTPAR)
 			this.currentMethod.param = formalParamDec();
 		if (lexer.token != Symbol.RIGHTPAR)
 			signalError.showError(") expected");
-
+		if(this.currentClass.getName().equals("Program")&& this.currentMethod.getName().equals("run")
+				&& this.currentMethod.param != null)
+			signalError.showError("method run can not take parameters");
 		lexer.nextToken();
 		if (lexer.token != Symbol.LEFTCURBRACKET)
 			signalError.showError("{ expected");
@@ -251,6 +285,8 @@ public class Compiler {
 		if (lexer.token != Symbol.IDENT)
 			signalError.showError("Identifier expected");
 		Variable v = new Variable(lexer.getStringValue(), type);
+		if (symbolTable.getInLocal(v.getName()) != null)
+			signalError.showError("variable has already been declared");
 		arrayVar.add(v);
 		this.symbolTable.putInLocal(v.getName(), v);
 		lexer.nextToken();
@@ -259,6 +295,8 @@ public class Compiler {
 			if (lexer.token != Symbol.IDENT)
 				signalError.showError("Identifier expected");
 			v = new Variable(lexer.getStringValue(), type);
+			if (symbolTable.getInLocal(v.getName()) != null)
+				signalError.showError("variable has already been declared");
 			this.symbolTable.putInLocal(v.getName(), v);
 			arrayVar.add(v);
 			lexer.nextToken();

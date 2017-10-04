@@ -4,8 +4,6 @@ import lexer.Symbol;
 
 public class MethodDec {
 
-	
-
 	public Type getReturnType() {
 		return returnType;
 	}
@@ -31,4 +29,15 @@ public class MethodDec {
 		this.qualifier = qualifier;
 	}
 
+	public void genKra(PW pw)
+	{
+		pw.printIdent(this.qualifier.name() + " " + this.returnType.getName()
+						+ " " + this.getName() + "(");
+		this.param.genKra(pw);
+		pw.println(") {");
+		pw.add();
+		this.stmtList.genKra(pw);
+		pw.sub();
+		pw.println("}");
+	}
 }
