@@ -1,8 +1,8 @@
 Relatório do Compilador
 
-21 de um total de 144 erros que deveriam ser sinalizados não o foram (14%)
-47 erros foram sinalizados na linha errada (32%)
-58 erros foram sinalizados em 74 arquivos sem erro (78%)
+27 de um total de 144 erros que deveriam ser sinalizados não o foram (18%)
+41 erros foram sinalizados na linha errada (28%)
+49 erros foram sinalizados em 74 arquivos sem erro (66%)
 
 Erros que deveriam ser sinalizados mas não foram:
 
@@ -12,7 +12,11 @@ ER-SEM04.KRA, 11, Type error: value of the right-hand side is not subtype of the
 
 ER-SEM05.KRA, 10, 'int' cannot be assigned to 'boolean' (comp.Compiler.assignExprLocalDec())
 
+ER-SEM08.KRA, 8, type boolean does not support operation '+' (comp.Compiler.simpleExpr())
+
 ER-SEM09.KRA, 10, type 'int' does not support operator '&&' (comp.Compiler.term())
+
+ER-SEM12.KRA, 9, operator '+' of 'int' expects an 'int' value (comp.Compiler.simpleExpr())
 
 ER-SEM13.KRA, 11, Command 'read' does not accept 'boolean' variables (comp.Compiler.readStatement())
 
@@ -22,15 +26,23 @@ ER-SEM15.KRA, 9, Operator '!' does not accepts 'int' values (comp.Compiler.facto
 
 ER-SEM16.KRA, 11, Operator '-' does not accepts 'boolean' expressions (comp.Compiler.signalFactor())
 
+ER-SEM26.KRA, 9, 'break' statement found outside a 'while' statement (comp.Compiler.statement()))
+
+ER-SEM33.KRA, 11, Method 'm' is being redeclared (comp.Compiler.methodDec())
+
 ER-SEM42.KRA, 14, Type error: type of the left-hand side of the assignment is a basic type and the type of the right-hand side is a class (comp.Compiler.assignExprLocalDec())
 
 ER-SEM43.KRA, 10, Type error: 'null' cannot be assigned to a variable of a basic type (comp.Compiler.assignExprLocalDec())
+
+ER-SEM50.KRA, 17, Command 'break' outside a command 'while' (comp.Compiler.breakStatement())
 
 ER-SEM88.KRA, 13, boolean expression expected in a do-while statement (comp.Compiler.doWhileStatement())
 
 ER-SEM89.KRA, 13, boolean expression expected in a do-while statement (comp.Compiler.doWhileStatement())
 
 ER-SIN05.KRA, 10, Expression expected (comp.Compiler.factor())
+
+ER-SIN17.KRA, 7, Missing ';' (comp.Compiler.localDec())
 
 ER-SIN18.KRA, 9, Missing ';' (comp.Compiler.assignExprLocalDec())
 
@@ -51,18 +63,6 @@ ER-SIN62.KRA, 17, 'while' expected (comp.Compiler.doWhileStatement())
 ######################################################
 Erros que foram sinalizados na linha errada:
 
-ER-SEM08.KRA
-    correto:    8, type boolean does not support operation '+' (comp.Compiler.simpleExpr())
-    sinalizado: 14, Source code without a class 'Program'
-
-ER-SEM12.KRA
-    correto:    9, operator '+' of 'int' expects an 'int' value (comp.Compiler.simpleExpr())
-    sinalizado: 15, Source code without a class 'Program'
-
-ER-SEM26.KRA
-    correto:    9, 'break' statement found outside a 'while' statement (comp.Compiler.statement()))
-    sinalizado: 15, Source code without a class 'Program'
-
 ER-SEM28.KRA
     correto:    10, Variable 'i' is being redeclared (comp.Compiler.localDec())
     sinalizado: 8, Identifier expected
@@ -78,10 +78,6 @@ ER-SEM31.KRA
 ER-SEM32.KRA
     correto:    11, Method 'm' is being redeclared (comp.Compiler.methodDec())
     sinalizado: 22, Type expected
-
-ER-SEM33.KRA
-    correto:    11, Method 'm' is being redeclared (comp.Compiler.methodDec())
-    sinalizado: 17, Source code without a class 'Program'
 
 ER-SEM34.KRA
     correto:    19, Message send 'a.m()' returns a value that is not used (comp.Compiler.statement())
@@ -122,10 +118,6 @@ ER-SEM45.KRA
 ER-SEM47.KRA
     correto:    24, Method 'm' was not found in superclass 'B' or its superclasses (comp.Compiler.factor())
     sinalizado: 7, Identifier expected
-
-ER-SEM50.KRA
-    correto:    17, Command 'break' outside a command 'while' (comp.Compiler.breakStatement())
-    sinalizado: 23, Source code without a class 'Program'
 
 ER-SEM51.KRA
     correto:    17, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
@@ -231,10 +223,6 @@ ER-SEM87.KRA
     correto:    11, Call to 'this' in a static method (comp.Compiler.factor())
     sinalizado: 10, public/private or "}" expected
 
-ER-SIN17.KRA
-    correto:    7, Missing ';' (comp.Compiler.localDec())
-    sinalizado: 12, Source code without a class 'Program'
-
 ER-SIN58.KRA
     correto:    10, ')' expected (comp.Compiler.factor())
     sinalizado: 9, Type expected
@@ -296,16 +284,6 @@ OK-GER22.KRA, 12, Return expression type is not compatible with the method type
 
 OK-LEX03.KRA, 22, Type expected
 
-OK-LEX04.KRA, 18, Source code without a class 'Program'
-
-OK-LEX05.KRA, 20, Source code without a class 'Program'
-
-OK-LEX06.KRA, 11, Source code without a class 'Program'
-
-OK-LEX07.KRA, 20, Source code without a class 'Program'
-
-OK-LEX08.KRA, 22, Source code without a class 'Program'
-
 OK-LEX10.KRA, 21, Type expected
 
 OK-SEM01.KRA, 4, public/private or "}" expected
@@ -313,8 +291,6 @@ OK-SEM01.KRA, 4, public/private or "}" expected
 OK-SEM05.KRA, 14, Identifier expected
 
 OK-SEM06.KRA, 12, Identifier expected
-
-OK-SEM07.KRA, 27, Source code without a class 'Program'
 
 OK-SEM08.KRA, 12, Identifier expected
 
@@ -340,8 +316,6 @@ OK-SEM19.KRA, 12, public/private or "}" expected
 
 OK-SEM20.KRA, 4, Return expression type is not compatible with the method type
 
-OK-SIN04.KRA, 31, Source code without a class 'Program'
-
 OK-SIN06.KRA, 13, Type expected
 
 OK-SIN07.KRA, 14, Identifier expected
@@ -351,10 +325,6 @@ OK-SIN08.KRA, 12, Return expression type is not compatible with the method type
 OK-SIN09.KRA, 14, Identifier expected
 
 OK-SIN10.KRA, 11, Identifier expected
-
-OK-SIN11.KRA, 31, Source code without a class 'Program'
-
-OK-SIN13.KRA, 18, Source code without a class 'Program'
 
 OK-SIN14.KRA, 14, Identifier expected
 
@@ -584,7 +554,7 @@ The 'ce' message is:      "'{' expected"
 
 
 ER-SIN14.KRA
-The compiler message was: "Source code without a class 'Program'"
+The compiler message was: "End of file expected"
 The 'ce' message is:      "'class' expected"
 
 

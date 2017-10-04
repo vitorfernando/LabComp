@@ -36,7 +36,7 @@ public class Compiler {
 			while (lexer.token == Symbol.MOCall) {
 				metaobjectCallList.add(metaobjectCall());
 			}
-			classDec();
+			kraClassList.add(classDec());
 			while (lexer.token == Symbol.CLASS)
 				kraClassList.add(classDec());
 			boolean progFlag = false;
