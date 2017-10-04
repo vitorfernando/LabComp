@@ -52,7 +52,8 @@ public enum Symbol {
     VOID("void"),
     WHILE("while"),
     WRITE("write"),
-    WRITELN("writeln");
+    WRITELN("writeln"),
+	DO("do");
 
 	Symbol(String name) {
 		this.name = name;

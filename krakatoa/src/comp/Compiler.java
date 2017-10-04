@@ -301,6 +301,8 @@ public class Compiler {
 			arrayVar.add(v);
 			lexer.nextToken();
 		}
+		if(lexer.token != Symbol.SEMICOLON)
+			this.signalError.showError("semicolon expected");
 		return new LocalDec(arrayVar, type);
 	}
 
@@ -417,10 +419,32 @@ public class Compiler {
 			return nullStatement();
 		case LEFTCURBRACKET:
 			return compositeStatement();
+		case DO:
+			return dowhileStatement();
 		default:
 			signalError.showError("Statement expected");
 		}
 		return null;
+	}
+
+	private Statement dowhileStatement() {
+		lexer.nextToken();
+		if(lexer.token != Symbol.LEFTCURBRACKET)
+			this.signalError.showError(" { expected");
+		StatementList comp = statementList();
+		if(lexer.token != Symbol.RIGHTCURBRACKET)
+			this.signalError.showError(" } expected");
+		if(lexer.token != Symbol.WHILE)
+			this.signalError.showError("'while' expected");
+		lexer.nextToken();
+		if(lexer.token != Symbol.LEFTPAR)
+			this.signalError.showError("'(' expected");
+		Expr expr = expr();
+		if(expr.getType() != Type.booleanType)
+			this.signalError.showError(" boolean expression expected");
+		if(lexer.token != Symbol.RIGHTPAR)
+			this.signalError.showError("')' expected");
+		return new DoWhileStatement(comp, expr);
 	}
 
 	private Statement assertStatement() {
@@ -480,6 +504,7 @@ public class Compiler {
 			if (lexer.token == Symbol.ASSIGN) {
 				lexer.nextToken();
 				right = expr();
+				
 				if (left.getType() != right.getType())
 					signalError.showError("Expressions of diferents types");
 
@@ -579,8 +604,12 @@ public class Compiler {
 			}
 			if (lexer.token != Symbol.IDENT)
 				signalError.show(ErrorSignaller.ident_expected);
-
-			readStmt.name.add(lexer.getStringValue());
+			String name = lexer.getStringValue();
+			if(this.symbolTable.getInLocal(name)==null)
+				this.signalError.showError("variable not declared");
+			if(this.symbolTable.getInLocal(name).getType().getName().equals("boolean"))
+				this.signalError.showError("command read dos not accept boolean variables");
+			readStmt.name.add(name);
 			lexer.nextToken();
 			if (lexer.token == Symbol.COMMA)
 				lexer.nextToken();
@@ -605,6 +634,14 @@ public class Compiler {
 			signalError.showError("( expected");
 		lexer.nextToken();
 		write.exprlist = exprList();
+		for(Expr e: write.exprlist.getExprList())
+		{
+			if(e.getType()== Type.booleanType)
+			{
+				this.signalError.showError("command write dos not accept boolean expression");
+				break;
+			}
+		}
 		if (lexer.token != Symbol.RIGHTPAR)
 			signalError.showError(") expected");
 		lexer.nextToken();
@@ -622,6 +659,15 @@ public class Compiler {
 			signalError.showError("( expected");
 		lexer.nextToken();
 		writeln.exprlist = exprList();
+		for(Expr e: writeln.exprlist.getExprList())
+		{
+			if(e.getType().getName().equals("boolean"))
+			{
+				this.signalError.showError("command writeln dos not accept boolean expression");
+				break;
+			}
+		}
+
 		if (lexer.token != Symbol.RIGHTPAR)
 			signalError.showError(") expected");
 		lexer.nextToken();
@@ -678,6 +724,12 @@ public class Compiler {
 		while ((op = lexer.token) == Symbol.MINUS || op == Symbol.PLUS || op == Symbol.OR) {
 			lexer.nextToken();
 			Expr right = term();
+			if((left.getType().getName().equals("int") ||right.getType().getName().equals("int"))
+					&& op == Symbol.OR)
+				signalError.showError("type int does not support operation '||'");
+			if((left.getType().getName().equals("boolean") ||right.getType().getName().equals("boolean"))
+					&& (op == Symbol.MINUS || op == Symbol.PLUS))
+				signalError.showError("type boolean dos not support operator '+'  or '-'");
 			left = new CompositeExpr(left, op, right);
 		}
 		return left;
@@ -690,6 +742,12 @@ public class Compiler {
 		while ((op = lexer.token) == Symbol.DIV || op == Symbol.MULT || op == Symbol.AND) {
 			lexer.nextToken();
 			Expr right = signalFactor();
+			if((left.getType().getName().equals("int") ||right.getType().getName().equals("int"))
+					&& op == Symbol.AND)
+				signalError.showError("type int does not support operation '&&'");
+			if((left.getType().getName().equals("boolean") ||right.getType().getName().equals("boolean"))
+					&& (op == Symbol.DIV || op == Symbol.MULT))
+				signalError.showError("type boolean dos not support operator '*'  or '\'");
 			left = new CompositeExpr(left, op, right);
 		}
 		return left;
@@ -699,7 +757,11 @@ public class Compiler {
 		Symbol op;
 		if ((op = lexer.token) == Symbol.PLUS || op == Symbol.MINUS) {
 			lexer.nextToken();
-			return new SignalExpr(op, factor());
+			Expr fact = factor();
+			if(fact.getType().getName().equals("boolean"))
+				this.signalError.showError("operator '-' dos not accept boolean expressions");
+			return new SignalExpr(op,fact);
+			
 		} else
 			return factor();
 	}
@@ -781,7 +843,7 @@ public class Compiler {
 			/*
 			 * return an object representing the creation of an object
 			 */
-			return null;
+			return new ConstructExpr(className);
 		/*
 		 * PrimaryExpr ::= "super" "." Id "(" [ ExpressionList ] ")" | Id | Id "." Id |
 		 * Id "." Id "(" [ ExpressionList ] ")" | Id "." Id "." Id "(" [ ExpressionList
@@ -804,7 +866,7 @@ public class Compiler {
 			 */
 			lexer.nextToken();
 			exprList = realParameters();
-			break;
+			return new SuperMethodExpr(messageName, exprList);
 		case IDENT:
 			/*
 			 * PrimaryExpr ::= Id | Id "." Id | Id "." Id "(" [ ExpressionList ] ")" | Id
@@ -819,7 +881,7 @@ public class Compiler {
 				Variable avar = this.symbolTable.getInLocal(firstId);
 				if (avar == null)
 					signalError.showError("class " + firstId + "does not exists");
-				return null;
+				return new VariableExpr(avar);
 			} else { // Id "."
 				lexer.nextToken(); // coma o "."
 				if (lexer.token != Symbol.IDENT) {
@@ -841,7 +903,7 @@ public class Compiler {
 						messageName = lexer.getStringValue();
 						lexer.nextToken();
 						exprList = this.realParameters();
-
+						
 					} else if (lexer.token == Symbol.LEFTPAR) {
 						// Id "." Id "(" [ ExpressionList ] ")"
 						Variable avar = this.symbolTable.getInLocal(firstId);
@@ -860,8 +922,9 @@ public class Compiler {
 						 * para fazer as conferências semânticas, procure por método 'ident' na classe
 						 * de 'firstId'
 						 */
+						return new VarMethodExpr(firstId, id, exprList);
 					} else {
-						// retorne o objeto da ASA que representa Id "." Id
+						return new VarMethodExpr(firstId, id);
 					}
 				}
 			}
@@ -877,7 +940,7 @@ public class Compiler {
 				// only 'this'
 				// retorne um objeto da ASA que representa 'this'
 				// confira se não estamos em um método estático
-				return null;
+				return new VarMethodExpr("this");
 			} else {
 				lexer.nextToken();
 				if (lexer.token != Symbol.IDENT)
@@ -892,23 +955,29 @@ public class Compiler {
 					 * tomar os parâmetros de ExpressionList
 					 */
 					exprList = this.realParameters();
+					return new VarMethodExpr("this",id,exprList);
 				} else if (lexer.token == Symbol.DOT) {
 					// "this" "." Id "." Id "(" [ ExpressionList ] ")"
 					lexer.nextToken();
 					if (lexer.token != Symbol.IDENT)
 						signalError.showError("Identifier expected");
+					String id2 = lexer.getStringValue();
 					lexer.nextToken();
+					if(lexer.token != Symbol.LEFTPAR)
+						this.signalError.showError(" ( expected");
 					exprList = this.realParameters();
+					if(lexer.token != Symbol.RIGHTPAR)
+						this.signalError.showError(" ) expected");
+					return new VarMethodExpr("this",id, id2, exprList);
 				} else {
 					// retorne o objeto da ASA que representa "this" "." Id
 					/*
 					 * confira se a classe corrente realmente possui uma variável de instância
 					 * 'ident'
 					 */
-					return null;
+					return new VarMethodExpr("this", id);
 				}
 			}
-			break;
 		default:
 			signalError.showError("Expression expected");
 		}

@@ -50,3 +50,8 @@
 /WriteStatement.class
 /AssignExprLocalDec.class
 /WriteLnStatement.class
+/DoWhileStatement.class
+/ConstructExpr.class
+/SuperMethodExpr.class
+/MethodExpr.class
+/VarMethodExpr.class

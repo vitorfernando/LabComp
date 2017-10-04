@@ -35,4 +35,12 @@ public class ExprList {
 
     private ArrayList<Expr> exprList;
 
+	public ArrayList<Expr> getExprList() {
+		return exprList;
+	}
+
+	public void setExprList(ArrayList<Expr> exprList) {
+		this.exprList = exprList;
+	}
+
 }
