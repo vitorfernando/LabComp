@@ -9,16 +9,25 @@ public class SymbolTable {
     public SymbolTable() {
         globalTable = new HashMap<String, KraClass>();
         localTable  = new HashMap<String, Variable>();
+        methodTable = new HashMap<String, MethodDec>(); 
     }
 
     public Object putInGlobal( String key, KraClass value ) {
        return globalTable.put(key, value);
     }
+    
+    public Object putInMethod( String key, MethodDec value ) {
+        return methodTable.put(key, value);
+     }
 
     public KraClass getInGlobal( String key ) {
        return globalTable.get(key);
     }
 
+    public MethodDec getInMethod( String key ) {
+        return methodTable.get(key);
+     }
+    
     public Variable putInLocal( String key, Variable value ) {
        return localTable.put(key, value);
     }
@@ -48,4 +57,5 @@ public class SymbolTable {
 
     private HashMap<String, KraClass> globalTable;
     private HashMap<String, Variable> localTable;
+    private HashMap<String, MethodDec> methodTable; 
 }

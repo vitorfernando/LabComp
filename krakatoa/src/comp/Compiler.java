@@ -10,7 +10,7 @@ public class Compiler {
 
 	private MethodDec currentMethod;
 	private KraClass currentClass;
-
+	private int countWhile = 0;
 	// compile must receive an input with an character less than
 	// p_input.lenght
 	public Program compile(char[] input, PrintWriter outError) {
@@ -126,10 +126,12 @@ public class Compiler {
 		// a produção KraClass (veja abaixo) e partes de outras produções.
 
 		/*
-		 * KraClass ::= ``class'' Id [ ``extends'' Id ] "{" MemberList "}" MemberList
-		 * ::= { Qualifier Member } Member ::= InstVarDec | MethodDec InstVarDec ::=
-		 * Type IdList ";" MethodDec ::= Qualifier Type Id "("[ FormalParamDec ] ")" "{"
-		 * StatementList "}" Qualifier ::= [ "static" ] ( "private" | "public" )
+		 * KraClass ::= ``class'' Id [ ``extends'' Id ] "{" MemberList "}" 
+		 * MemberList ::= { Qualifier Member } 
+		 * Member ::= InstVarDec | MethodDec 
+		 * InstVarDec ::= Type IdList ";" 
+		 * MethodDec ::= Qualifier Type Id "("[ FormalParamDec ] ")" "{" StatementList "}" 
+		 * Qualifier ::= [ "static" ] ( "private" | "public" )
 		 */
 		String superclassName = null;
 		ArrayList<MethodDec> methodList = new ArrayList<>();
@@ -141,7 +143,7 @@ public class Compiler {
 			signalError.show(ErrorSignaller.ident_expected);
 		String className = lexer.getStringValue();
 		if (symbolTable.getInGlobal(className) != null)
-			signalError.showError("class alreaby been delcared");
+			signalError.showError("class alreaby been declared");
 		this.currentClass = new KraClass(className);
 		symbolTable.putInGlobal(className, this.currentClass);
 		lexer.nextToken();
@@ -194,7 +196,7 @@ public class Compiler {
 				instanceVarDec(t, name);
 		}
 		if (lexer.token != Symbol.RIGHTCURBRACKET)
-			signalError.showError("public/private or \"}\" expected");
+			signalError.showError("'public', 'private' or '}' expected");
 		lexer.nextToken();
 		if(this.currentClass.getName().equals("Program"))
 			{
@@ -218,16 +220,25 @@ public class Compiler {
 		// InstVarDec ::= [ "static" ] "private" Type IdList ";"
 
 		this.currentClass.addInstanceVariable(new InstanceVariable(name, type));
-		do {
+		
+		InstanceVariable var = new InstanceVariable(name, type);
+		if (symbolTable.getInLocal(var.getName()) != null)
+			signalError.showError("variable has already been declared");
+		symbolTable.putInLocal(var.getName(), var);
+		this.currentClass.addInstanceVariable(var);
+		
+		while(lexer.token == Symbol.COMMA){
+			lexer.nextToken();
 			if (lexer.token != Symbol.IDENT)
 				signalError.showError("Identifier expected");
-			InstanceVariable var = new InstanceVariable(lexer.getStringValue(), type);
+			var = new InstanceVariable(lexer.getStringValue(), type);
 			if (symbolTable.getInLocal(var.getName()) != null)
 				signalError.showError("variable has already been declared");
 			symbolTable.putInLocal(var.getName(), var);
 			this.currentClass.addInstanceVariable(var);
-			lexer.nextToken();
-		}while (lexer.token == Symbol.COMMA);
+				lexer.nextToken();
+		}
+	
 		if (lexer.token != Symbol.SEMICOLON)
 			signalError.show(ErrorSignaller.semicolon_expected);
 		lexer.nextToken();
@@ -239,8 +250,10 @@ public class Compiler {
 		 * "}"
 		 */
 		this.currentMethod = new MethodDec(type, name, qualifier);
-		if (symbolTable.getInLocal(this.currentMethod.getName()) != null)
-			signalError.showError("method has already been declared");
+		if (symbolTable.getInMethod(this.currentMethod.getName()) != null)
+			signalError.showError("Method '"+this.currentMethod.getName()+"' is being redeclared");
+		if(symbolTable.getInLocal(this.currentMethod.getName()) != null)
+			signalError.showError("Method '"+this.currentMethod.getName()+"' has name equal to an instance variable");
 		lexer.nextToken();
 		if (lexer.token != Symbol.RIGHTPAR)
 			this.currentMethod.param = formalParamDec();
@@ -274,6 +287,7 @@ public class Compiler {
 
 		lexer.nextToken();
 		this.currentClass.addMethod(this.currentMethod);
+		symbolTable.putInMethod(name, this.currentMethod);
 		this.currentMethod = null;
 	}
 
@@ -412,6 +426,10 @@ public class Compiler {
 		case IF:
 			return ifStatement();
 		case BREAK:
+			if(countWhile == 0)	
+				signalError.showError("'break' statement found outside a 'while' statement");
+			else
+				countWhile--;
 			return breakStatement();
 		case WHILE:
 			return whileStatement();
@@ -548,6 +566,7 @@ public class Compiler {
 		if (lexer.token != Symbol.RIGHTPAR)
 			signalError.showError(") expected");
 		lexer.nextToken();
+		countWhile++;
 		Statement stmt = statement();
 		return new WhileStatement(expr, stmt);
 	}
@@ -609,14 +628,15 @@ public class Compiler {
 				this.signalError.showError("variable not declared");
 			if(this.symbolTable.getInLocal(name).getType().getName().equals("boolean"))
 				this.signalError.showError("command read dos not accept boolean variables");
-			readStmt.name.add(name);
 			lexer.nextToken();
+			
+			readStmt.name.add(name);
 			if (lexer.token == Symbol.COMMA)
 				lexer.nextToken();
-			else
+			else	
 				break;
 		}
-
+	
 		if (lexer.token != Symbol.RIGHTPAR)
 			signalError.showError(") expected");
 		lexer.nextToken();

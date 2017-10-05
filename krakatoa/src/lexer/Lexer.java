@@ -124,6 +124,7 @@ public class Lexer {
                   token = value;
             }
             else if ( Character.isDigit( ch ) ) {
+            	
                 // get a number
                 StringBuffer number = new StringBuffer();
                 while ( Character.isDigit( input[tokenPos] ) ) {
@@ -140,6 +141,7 @@ public class Lexer {
                    error.showError("Number out of limits");
             }
             else {
+            	//System.out.println(ch+ "aqui");
                 tokenPos++;
                 switch ( ch ) {
                     case '+' :
@@ -274,6 +276,7 @@ public class Lexer {
                 }
             }
           }
+        System.out.println(token);
         beforeLastTokenPos = lastTokenPos;
     }
 

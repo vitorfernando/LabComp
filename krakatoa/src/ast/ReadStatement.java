@@ -5,6 +5,12 @@ import java.util.ArrayList;
 public class ReadStatement extends Statement{
 
 	public ArrayList<String> name;
+	
+	
+	public ReadStatement() {
+		super();
+		this.name = new ArrayList<String>();
+	}
 
 	@Override
 	public void genC(PW pw) {
