@@ -10,6 +10,10 @@ public class FormalParamDec {
 		this.params = params;
 	}
 	
+	public ArrayList<ParamDec> getParams() {
+		return params;
+	}
+
 	public void genKra(PW pw) 
 	{
 		int size = params.size();

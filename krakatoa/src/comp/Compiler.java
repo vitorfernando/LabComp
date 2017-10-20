@@ -2,6 +2,7 @@
 package comp;
 
 import ast.*;
+import jdk.nashorn.internal.runtime.Undefined;
 import lexer.*;
 import java.io.*;
 import java.util.*;
@@ -53,7 +54,11 @@ public class Compiler {
 			if (lexer.token != Symbol.EOF) {
 				signalError.showError("End of file expected");
 			}
-		} catch (RuntimeException e) {
+		}
+		catch( CompilerError e) {
+			// if there was an exception, there is a compilation signalError
+		}
+		catch (RuntimeException e) {
 			// if there was an exception, there is a compilation signalError
 		}
 		return program;
@@ -250,8 +255,20 @@ public class Compiler {
 		 * "}"
 		 */
 		this.currentMethod = new MethodDec(type, name, qualifier);
-		if (symbolTable.getInMethod(this.currentMethod.getName()) != null)
+		ArrayList<MethodDec> publicMethodList = this.currentClass.getPublicMethodList();
+		int i=0;
+		boolean flag = false;
+		while(i < publicMethodList.size()){
+			if(publicMethodList.get(i).getName().equals(name)){
+				flag = true;
+				break;
+			}
+			i++;
+		}
+		//nao achou a variavel de instancia indicada
+		if(flag)
 			signalError.showError("Method '"+this.currentMethod.getName()+"' is being redeclared");
+				
 		if(symbolTable.getInLocal(this.currentMethod.getName()) != null)
 			signalError.showError("Method '"+this.currentMethod.getName()+"' has name equal to an instance variable");
 		lexer.nextToken();
@@ -287,7 +304,6 @@ public class Compiler {
 
 		lexer.nextToken();
 		this.currentClass.addMethod(this.currentMethod);
-		symbolTable.putInMethod(name, this.currentMethod);
 		this.currentMethod = null;
 	}
 
@@ -363,11 +379,15 @@ public class Compiler {
 		case IDENT:
 			// # corrija: faça uma busca na TS para buscar a classe
 			// IDENT deve ser uma classe.
-			KraClass classident = this.symbolTable.getInGlobal(lexer.getStringValue());
-			if(classident == null)
+			String className = lexer.getStringValue();
+			KraClass classident = this.symbolTable.getInGlobal(className);
+			if(classident == null){
 				signalError.showError("This class does not exists");
+				result = Type.undefinedType;
+			}
 			else
 				result = classident;
+			break;
 		default:
 			signalError.showError("Type expected");
 			result = Type.undefinedType;
@@ -522,6 +542,8 @@ public class Compiler {
 			if (lexer.token == Symbol.ASSIGN) {
 				lexer.nextToken();
 				right = expr();
+				Type r = right.getType();
+				Type l =left.getType();
 				
 				if (left.getType() != right.getType())
 					signalError.showError("Expressions of diferents types");
@@ -531,8 +553,8 @@ public class Compiler {
 				else
 					lexer.nextToken();
 			}
-			else
-				this.signalError.showError("assingment symbol (=) expected");
+		//else
+			//	this.signalError.showError("assingment symbol (=) expected");
 		}
 		a.left = left;
 		a.right = right;
@@ -600,8 +622,7 @@ public class Compiler {
 		if (this.currentMethod.getReturnType() == Type.voidType)
 			signalError.showError("This method cannot return a value ");
 		if (!retStmt.expr.getType().isCompatible(this.currentMethod.getReturnType()))
-			;
-		signalError.showError("Return expression type is not compatible with the method type");
+			signalError.showError("Return expression type is not compatible with the method type");
 		if (lexer.token != Symbol.SEMICOLON)
 			signalError.show(ErrorSignaller.semicolon_expected);
 		lexer.nextToken();
@@ -863,7 +884,7 @@ public class Compiler {
 			/*
 			 * return an object representing the creation of an object
 			 */
-			return new ConstructExpr(className);
+			return new ConstructExpr(className,aclass);
 		/*
 		 * PrimaryExpr ::= "super" "." Id "(" [ ExpressionList ] ")" | Id | Id "." Id |
 		 * Id "." Id "(" [ ExpressionList ] ")" | Id "." Id "." Id "(" [ ExpressionList
@@ -901,6 +922,7 @@ public class Compiler {
 				Variable avar = this.symbolTable.getInLocal(firstId);
 				if (avar == null)
 					signalError.showError("class " + firstId + "does not exists");
+				
 				return new VariableExpr(avar);
 			} else { // Id "."
 				lexer.nextToken(); // coma o "."
@@ -942,9 +964,13 @@ public class Compiler {
 						 * para fazer as conferências semânticas, procure por método 'ident' na classe
 						 * de 'firstId'
 						 */
-						return new VarMethodExpr(firstId, id, exprList);
+						return new VarMethodExpr(firstId, id, exprList,amethod.getReturnType());
 					} else {
-						return new VarMethodExpr(firstId, id);
+						Variable avar = this.symbolTable.getInLocal(id);
+						if (avar == null)
+							signalError.showError("Identifier " + id + "was not declared");
+						Type typeVar = avar.getType();
+						return new VarMethodExpr(firstId, id,typeVar);
 					}
 				}
 			}
@@ -975,7 +1001,24 @@ public class Compiler {
 					 * tomar os parâmetros de ExpressionList
 					 */
 					exprList = this.realParameters();
-					return new VarMethodExpr("this",id,exprList);
+					MethodDec amethod = currentClass.searchPublicMethod(id);
+					Type type = null;
+					if (amethod == null)
+						signalError.showError("Method " + id + "is not a public method of currentclass or not exist");
+					else
+						type = amethod.getReturnType();
+					int i =0;
+					ArrayList<Expr> eList = exprList.getExprList();
+					ArrayList<ParamDec> fParam = amethod.param.getParams();
+					boolean flag = false;
+					while(i < eList.size()){
+						if(!eList.get(i).getType().isCompatible(fParam.get(i).getType()))
+							flag = true;
+						i++;
+					}
+					if(flag)
+						signalError.showError("Type error: the type of the real parameter is not subclass of the type of the formal parameter");					
+					return new VarMethodExpr("this",id,exprList,type);
 				} else if (lexer.token == Symbol.DOT) {
 					// "this" "." Id "." Id "(" [ ExpressionList ] ")"
 					lexer.nextToken();
@@ -995,7 +1038,22 @@ public class Compiler {
 					 * confira se a classe corrente realmente possui uma variável de instância
 					 * 'ident'
 					 */
-					return new VarMethodExpr("this", id);
+					ArrayList<InstanceVariable> instanceVariableList = currentClass.getInstanceVariableList();
+					boolean flag = false;
+					Type type = null;
+					int i=0; 
+					while(i < instanceVariableList.size()){
+						if(instanceVariableList.get(i).getName().equals(id)){
+							flag = true;
+							type = instanceVariableList.get(i).getType();
+							break;
+						}
+						i++;
+					}
+					//nao achou a variavel de instancia indicada
+					if(!flag) 
+						signalError.showError("InstanceVariable not found in this");
+					return new VarMethodExpr("this", id,type);
 				}
 			}
 		default:

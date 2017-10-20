@@ -6,16 +6,19 @@ public class VarMethodExpr extends Expr {
 	private String id;
 	private ExprList exprList;
 	private String id22;
-
-	public VarMethodExpr(String firstId, String id, ExprList exprList) {
+	private Type type;
+	
+	public VarMethodExpr(String firstId, String id, ExprList exprList, Type type) {
 		this.firstId = firstId;
 		this.id = id;
 		this.exprList = exprList;
+		this.type = type;
 	}
 
-	public VarMethodExpr(String firstId2, String id2) {
+	public VarMethodExpr(String firstId2, String id2,Type type) {
 		this.firstId = firstId2;
 		this.id = id2;
+		this.type = type;
 	}
 
 	public VarMethodExpr(String string) {
@@ -37,8 +40,7 @@ public class VarMethodExpr extends Expr {
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return type;
 	}
 
 	@Override
@@ -46,5 +48,4 @@ public class VarMethodExpr extends Expr {
 		// TODO Auto-generated method stub
 
 	}
-
 }

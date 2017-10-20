@@ -3,9 +3,11 @@ package ast;
 public class ConstructExpr extends Expr {
 
 	private String className;
-
-	public ConstructExpr(String className) {
+	private KraClass aclass;
+	
+	public ConstructExpr(String className,KraClass aclass) {
 		this.className = className;
+		this.aclass = aclass;
 	}
 
 	@Override
@@ -15,11 +17,10 @@ public class ConstructExpr extends Expr {
 	}
 
 	@Override
-	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+	public Type getType(){
+		return this.aclass;
 	}
-
+	
 	@Override
 	public void genKra(PW pw) {
 		// TODO Auto-generated method stub

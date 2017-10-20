@@ -26,4 +26,5 @@ public class LiteralBoolean extends Expr {
 		// TODO Auto-generated method stub
 		
 	}
+
 }

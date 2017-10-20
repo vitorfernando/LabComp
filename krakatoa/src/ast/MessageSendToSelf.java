@@ -15,6 +15,6 @@ public class MessageSendToSelf extends MessageSend {
 		// TODO Auto-generated method stub
 		
 	}
-    
+
     
 }
